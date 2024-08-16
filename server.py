@@ -10,19 +10,26 @@ import torch
 import joblib
 from google.cloud import storage
 from google.oauth2 import service_account
+import base64
 
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 # Load environment variables from the .env file
-load_dotenv()
+# load_dotenv()
 
 # # The environment variable is automatically injected by Vercel
 # credentials_path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 # # Initialize a Google Cloud Storage client using the service account key
 # credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
-credentials_info = json.loads(os.environ.get('GOOGLE_CREDENTIALS_JSON'))
+# credentials_info = json.loads(os.environ.get('GOOGLE_CREDENTIALS_JSON'))
+# credentials = service_account.Credentials.from_service_account_info(credentials_info)
+
+credentials_base64 = os.environ.get('GOOGLE_CREDENTIALS_JSON_BASE64')
+
+credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+credentials_info = json.loads(credentials_json)
 credentials = service_account.Credentials.from_service_account_info(credentials_info)
 
 client = storage.Client(credentials=credentials)
@@ -127,4 +134,5 @@ def get_random_recipe():
     return jsonify(random_recipe)
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    port = int(os.environ.get('PORT', 8080))  # Default to 8080 if PORT is not set
+    app.run(host='0.0.0.0', port=port)

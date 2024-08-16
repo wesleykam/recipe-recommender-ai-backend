@@ -1,0 +1,9 @@
+Flask
+flask-cors
+pandas
+numpy
+torch
+sentence-transformers
+scikit-learn
+google-cloud-storage
+google-auth
