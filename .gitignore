@@ -1,0 +1,9 @@
+.env
+
+tmp
+
+sentence_transformer_model
+*.npy
+*.pkl
+*.pt
+*.csv
