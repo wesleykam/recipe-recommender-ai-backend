@@ -13,21 +13,9 @@ from google.oauth2 import service_account
 import base64
 
 import os
-# from dotenv import load_dotenv
 
-# Load environment variables from the .env file
-# load_dotenv()
-
-# # The environment variable is automatically injected by Vercel
-# credentials_path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 # # Initialize a Google Cloud Storage client using the service account key
-# credentials = service_account.Credentials.from_service_account_file(credentials_path)
-
-# credentials_info = json.loads(os.environ.get('GOOGLE_CREDENTIALS_JSON'))
-# credentials = service_account.Credentials.from_service_account_info(credentials_info)
-
 credentials_base64 = os.environ.get('GOOGLE_CREDENTIALS_JSON_BASE64')
-
 credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
 credentials_info = json.loads(credentials_json)
 credentials = service_account.Credentials.from_service_account_info(credentials_info)
@@ -43,8 +31,10 @@ blobs_all = list(bucket.list_blobs())
 blobs = [b for b in blobs_all if b.id.__contains__('sentence_transformer_model/')]
 for blob in blobs:
    if not blob.name.endswith('/'):
-      print(f'Downloading file [{blob.name}]')
-      blob.download_to_filename(f'./{blob.name}')
+        file_path = f'./{blob.name}'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure directories exist
+        print(f'Downloading file [{blob.name}] to [{file_path}]')
+        blob.download_to_filename(file_path)
 
 # Download other files from bucket
 blob = bucket.blob('tfidf_vectorizer.pkl')
@@ -65,6 +55,7 @@ blob.download_to_filename('recipes_data_10.csv')
 
 
 app = Flask(__name__)
+
 CORS(app)
 
 # Load data
